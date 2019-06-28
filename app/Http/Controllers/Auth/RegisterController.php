@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -28,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -49,11 +49,9 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'fistname' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'gender' => ['required', 'string', 'max:255'],
-            'day_birth' => ['required', 'string', 'max:255'],
+            'name' => 'required|string|max:255',
+            'familia' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
         ]);
     }
 
@@ -65,12 +63,15 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'fistname' => $data['fistname'],
-            'lastname' => $data['lastname'],
-            'email' => ($data['email']),
-            'gender' => $data['gender'],
-            'day_birth' => $data['day_birth'],
-        ]);
+        $in['name'] = $data['name'];
+        $in['familia'] = $data['familia'];
+        $in['sex'] = $data['sex'];
+		$in['email'] = strtolower($data['email']);
+        $in['password'] = Hash::make($data['password']);
+		$in['birthday'] = $data['birthday'];
+		
+		$user = User::create($in);
+		
+		return $user;
     }
 }
